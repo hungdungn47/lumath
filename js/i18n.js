@@ -6,6 +6,10 @@
     en: {
       // ---- page ----
       'module.intervals': 'Intervals & sets',
+      'theme.label': 'Theme',
+      'theme.system': 'Match system',
+      'theme.light': 'Light',
+      'theme.dark': 'Dark',
       tagline: 'Watch sets slide along the number line as <b>m</b> changes.',
       'build.title': 'Build a problem',
       'build.examples': 'Examples',
@@ -111,6 +115,10 @@
     vi: {
       // ---- page ----
       'module.intervals': 'Khoảng & tập hợp',
+      'theme.label': 'Giao diện',
+      'theme.system': 'Theo hệ thống',
+      'theme.light': 'Sáng',
+      'theme.dark': 'Tối',
       tagline: 'Xem các tập hợp trượt trên trục số khi <b>m</b> thay đổi.',
       'build.title': 'Tạo bài toán',
       'build.examples': 'Bài mẫu',

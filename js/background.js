@@ -11,6 +11,11 @@
   const mouse = { x: 0.5, y: 0.5, sx: 0.5, sy: 0.5 };
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const LOOKS = {
+    dark: { bg: '#05070f', glow: 0.13, star: '226,232,240', starAlpha: 1, streak: '255,255,255' },
+    light: { bg: '#eef2fb', glow: 0.2, star: '71,85,105', starAlpha: 0.45, streak: '99,102,241' },
+  };
+
   const blobs = [
     { hue: '99,102,241', x: 0.2, y: 0.25, r: 0.45, sp: 0.05 },
     { hue: '34,211,238', x: 0.85, y: 0.3, r: 0.35, sp: 0.07 },
@@ -48,7 +53,8 @@
     mouse.sx += (mouse.x - mouse.sx) * 0.03;
     mouse.sy += (mouse.y - mouse.sy) * 0.03;
 
-    ctx.fillStyle = '#05070f';
+    const look = LOOKS[Theme.resolved];
+    ctx.fillStyle = look.bg;
     ctx.fillRect(0, 0, W, H);
 
     for (const b of blobs) {
@@ -56,7 +62,7 @@
       const by = (b.y + Math.cos(time * b.sp * 1.3) * 0.06) * H;
       const r = b.r * Math.max(W, H);
       const g = ctx.createRadialGradient(bx, by, 0, bx, by, r);
-      g.addColorStop(0, `rgba(${b.hue},0.13)`);
+      g.addColorStop(0, `rgba(${b.hue},${look.glow})`);
       g.addColorStop(1, `rgba(${b.hue},0)`);
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
@@ -70,7 +76,7 @@
         if (s.x < -4) s.x = W + 4;
       }
       const a = 0.25 + 0.55 * s.z * (0.6 + 0.4 * Math.sin(time * 2 * s.z + s.tw));
-      ctx.fillStyle = `rgba(226,232,240,${a})`;
+      ctx.fillStyle = `rgba(${look.star},${a * look.starAlpha})`;
       ctx.beginPath();
       ctx.arc(s.x - px * s.z, s.y - py * s.z, s.z * 1.3, 0, Math.PI * 2);
       ctx.fill();
@@ -85,8 +91,8 @@
       s.y += s.vy * dt;
       const a = Math.max(0, 1 - s.age / 0.9);
       const g = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * 0.12, s.y - s.vy * 0.12);
-      g.addColorStop(0, `rgba(255,255,255,${a})`);
-      g.addColorStop(1, 'rgba(255,255,255,0)');
+      g.addColorStop(0, `rgba(${look.streak},${a})`);
+      g.addColorStop(1, `rgba(${look.streak},0)`);
       ctx.strokeStyle = g;
       ctx.lineWidth = 1.5;
       ctx.beginPath();

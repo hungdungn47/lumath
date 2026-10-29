@@ -3,18 +3,49 @@
 (function () {
   'use strict';
 
-  const C = {
-    A: '#22d3ee',
-    B: '#c084fc',
-    inter: '#fbbf24',
-    yes: '#34d399',
-    no: '#fb7185',
-    validity: '#94a3b8',
-    atoms: ['#60a5fa', '#f472b6', '#fb923c', '#a3e635'],
-    text: '#e2e8f0',
-    dim: '#64748b',
-    faint: 'rgba(148,163,184,0.18)',
+  // Canvas colors per theme. Colors passed to rgba() must be 6-digit hex.
+  const PALETTES = {
+    dark: {
+      A: '#22d3ee',
+      B: '#c084fc',
+      inter: '#fbbf24',
+      yes: '#34d399',
+      no: '#fb7185',
+      validity: '#94a3b8',
+      atoms: ['#60a5fa', '#f472b6', '#fb923c', '#a3e635'],
+      text: '#e2e8f0',
+      strong: '#f8fafc',
+      dim: '#64748b',
+      faint: 'rgba(148,163,184,0.18)',
+      axis: '#94a3b8',
+      accent: '#a5b4fc',
+      hint: '#cbd5e1',
+      crit: '#fde68a',
+      hole: '#0b1022',
+      blend: 'lighter',
+    },
+    light: {
+      A: '#0891b2',
+      B: '#9333ea',
+      inter: '#d97706',
+      yes: '#059669',
+      no: '#e11d48',
+      validity: '#64748b',
+      atoms: ['#2563eb', '#db2777', '#ea580c', '#65a30d'],
+      text: '#0f172a',
+      strong: '#0f172a',
+      dim: '#64748b',
+      faint: 'rgba(15,23,42,0.12)',
+      axis: '#64748b',
+      accent: '#6366f1',
+      hint: '#334155',
+      crit: '#b45309',
+      hole: '#ffffff',
+      blend: 'source-over',
+    },
   };
+  // Mutated in place on theme change so every holder of SceneColors sees the new palette.
+  const C = { ...PALETTES[Theme.resolved] };
   const FONT = '"Space Grotesk", ui-sans-serif, system-ui, sans-serif';
   const MONO = '"JetBrains Mono", ui-monospace, monospace';
   const PAINT_N = 600;
@@ -59,6 +90,10 @@
       this.W = 800;
       this.H = 600;
       new ResizeObserver(() => this.resize()).observe(canvas.parentElement);
+      Theme.onChange((theme) => {
+        Object.assign(C, PALETTES[theme]);
+        if (this.tracks) this.recolor();
+      });
       this.resize();
       let last = performance.now();
       const loop = (t) => {
@@ -76,10 +111,8 @@
     setProblem(P, R) {
       this.P = P;
       this.R = R;
-      this.tracks = [
-        ...R.validity.map((a) => ({ atom: a, color: C.validity })),
-        ...R.conditions.map((a, i) => ({ atom: a, color: C.atoms[i % C.atoms.length] })),
-      ];
+      this.tracks = [...R.validity, ...R.conditions].map((atom) => ({ atom }));
+      this.recolor();
 
       const cr = R.criticals;
       if (cr.length) {
@@ -117,6 +150,13 @@
       this.revealT = 0;
       this.focus = null;
       this.resize();
+    }
+
+    recolor() {
+      const nV = this.R.validity.length;
+      this.tracks.forEach((tr, i) => {
+        tr.color = i < nV ? C.validity : C.atoms[(i - nV) % C.atoms.length];
+      });
     }
 
     // Same problem, freshly translated solver output (language switch).
@@ -338,7 +378,7 @@
       const { axis } = this.L;
 
       // axis with ticks
-      ctx.strokeStyle = 'rgba(148,163,184,0.55)';
+      ctx.strokeStyle = rgba(C.axis, 0.55);
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(8, axis);
@@ -355,7 +395,7 @@
       const step = niceStep(this.xMax - this.xMin, this.W < 520 ? 7 : 14);
       for (let v = Math.ceil(this.xMin / step) * step; v <= this.xMax; v += step) {
         const px = this.xPx(v);
-        ctx.strokeStyle = 'rgba(148,163,184,0.35)';
+        ctx.strokeStyle = rgba(C.axis, 0.35);
         ctx.beginPath();
         ctx.moveTo(px, axis - 4);
         ctx.lineTo(px, axis + 4);
@@ -524,7 +564,7 @@
         ctx.arc(p, axis, 5, 0, Math.PI * 2);
         ctx.shadowColor = color;
         ctx.shadowBlur = 10;
-        ctx.fillStyle = closed ? color : '#0b1022';
+        ctx.fillStyle = closed ? color : C.hole;
         ctx.fill();
         ctx.shadowBlur = 0;
         ctx.strokeStyle = color;
@@ -606,9 +646,9 @@
       const ok = this.truth;
       const col = ok ? C.yes : C.no;
       const left = Math.max(8, this.padL - 30);
-      const w = this.pill(left, 30, this.R.relSym, '#a5b4fc', { size: 13, align: 'left', fill: 0.1 });
+      const w = this.pill(left, 30, this.R.relSym, C.accent, { size: 13, align: 'left', fill: 0.1 });
       this.pill(left + w + 8, 30, t(ok ? 'scene.true' : 'scene.false'), col, { size: 13, align: 'left', fill: 0.18 });
-      this.text(`m = ${dec(this.m)}`, this.W - 16, 30, { color: '#f8fafc', size: 20, weight: 700, align: 'right', font: MONO, glow: 14 });
+      this.text(`m = ${dec(this.m)}`, this.W - 16, 30, { color: C.strong, size: 20, weight: 700, align: 'right', font: MONO, glow: 14 });
 
       const ft = typeof this.focus === 'number' ? this.tracks[this.focus] : null;
       if (ft && this.W > 560) {
@@ -624,22 +664,22 @@
       const x1 = this.W - this.mPadR;
 
       const dg = ctx.createLinearGradient(0, 0, this.W, 0);
-      dg.addColorStop(0, 'rgba(148,163,184,0)');
-      dg.addColorStop(0.5, 'rgba(148,163,184,0.25)');
-      dg.addColorStop(1, 'rgba(148,163,184,0)');
+      dg.addColorStop(0, rgba(C.axis, 0));
+      dg.addColorStop(0.5, rgba(C.axis, 0.25));
+      dg.addColorStop(1, rgba(C.axis, 0));
       ctx.fillStyle = dg;
       ctx.fillRect(0, divider, this.W, 1);
 
       const headX = x0 - 30 > 8 ? x0 - 30 : 8;
-      const headW = this.text(t('scene.mAxis'), headX, mHead, { color: '#a5b4fc', size: 11, weight: 700 });
+      const headW = this.text(t('scene.mAxis'), headX, mHead, { color: C.accent, size: 11, weight: 700 });
       if (this.W > 560) this.text(t('scene.legend'), headX + headW + 24, mHead, { color: C.dim, size: 11 });
 
       // tracks (revealed progressively)
       const items = [...this.tracks.map((t, i) => ({ ...t, i })), { answer: true, color: C.yes }];
       if (!this.revealed && this.revealT === 0) {
         const cy = tracksTop + (items.length * trackH) / 2 - 6;
-        this.text(t('scene.hint1'), (x0 + x1) / 2, cy - 10, { color: rgba('#cbd5e1', 0.7), size: 13, align: 'center' });
-        this.text(t('scene.hint2'), (x0 + x1) / 2, cy + 12, { color: rgba('#cbd5e1', 0.5), size: 12, align: 'center' });
+        this.text(t('scene.hint1'), (x0 + x1) / 2, cy - 10, { color: rgba(C.hint, 0.7), size: 13, align: 'center' });
+        this.text(t('scene.hint2'), (x0 + x1) / 2, cy + 12, { color: rgba(C.hint, 0.5), size: 12, align: 'center' });
       } else {
         items.forEach((it, k) => {
           const prog = clamp(this.revealT * (items.length + 1) - k, 0, 1);
@@ -698,7 +738,7 @@
           ctx.save();
           ctx.globalAlpha = clamp((this.revealT - 0.6) / 0.4, 0, 1);
           ctx.setLineDash([2, 4]);
-          ctx.strokeStyle = 'rgba(203,213,225,0.25)';
+          ctx.strokeStyle = rgba(C.hint, 0.25);
           for (const c of this.R.criticals) {
             const px = this.mPx(c);
             if (px < x0 - 1 || px > x1 + 1) continue;
@@ -712,7 +752,7 @@
       }
 
       // m axis with exploration paint
-      ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+      ctx.strokeStyle = rgba(C.axis, 0.5);
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(x0 - 10, mAxis);
@@ -726,7 +766,7 @@
       const critLabels = this.revealT > 0.6 ? this.R.criticals : [];
       for (let v = Math.ceil(this.mMin / step) * step; v <= this.mMax + 1e-9; v += step) {
         const px = this.mPx(v);
-        ctx.strokeStyle = 'rgba(148,163,184,0.4)';
+        ctx.strokeStyle = rgba(C.axis, 0.4);
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(px, mAxis - 4);
@@ -738,7 +778,7 @@
       for (const c of critLabels) {
         const px = this.mPx(c);
         if (px < x0 - 1 || px > x1 + 1) continue;
-        this.text(Solver.frac(c), px, mAxis + 18, { color: '#fde68a', size: 12, weight: 700, align: 'center', font: MONO, glow: 6 });
+        this.text(Solver.frac(c), px, mAxis + 18, { color: C.crit, size: 12, weight: 700, align: 'center', font: MONO, glow: 6 });
       }
 
       // the scanner: current m
@@ -798,7 +838,7 @@
           }
           ctx.beginPath();
           ctx.arc(px, y, thick * 0.5 + 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = closed ? color : '#0b1022';
+          ctx.fillStyle = closed ? color : C.hole;
           ctx.fill();
           ctx.strokeStyle = color;
           ctx.lineWidth = 2;
@@ -838,7 +878,7 @@
     drawParticles() {
       const ctx = this.ctx;
       ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalCompositeOperation = C.blend;
       for (const p of this.particles) {
         const t = p.age / p.life;
         ctx.globalAlpha = (1 - t) * (t < 0.1 ? t * 10 : 1);

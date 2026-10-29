@@ -213,7 +213,9 @@
     parts.push(`<div class="intro">${t('steps.intro', { rel: R.relSym, words: R.relWords, need })}</div>`);
     scene.tracks.forEach((t, i) => {
       const tag = t.atom.kind === 'validity' ? 'V' : circled(i - nV);
-      parts.push(stepHTML(t.atom, i, t.color, tag, i * 120));
+      // CSS variables (not t.color) so the cards follow theme changes without re-rendering
+      const color = t.atom.kind === 'validity' ? 'var(--validity)' : `var(--atom-${(i - nV) % 4})`;
+      parts.push(stepHTML(t.atom, i, color, tag, i * 120));
     });
 
     const tags = R.conditions.map((_, i) => circled(i));
@@ -224,7 +226,7 @@
     parts.push(`
       <div class="step combine" data-i="answer" style="animation-delay:${scene.tracks.length * 120}ms">
         <div class="step-head"><span class="tag">✓</span><span class="say">${t('steps.combine')}</span><span class="live"></span></div>
-        <div class="why">${combineText}: <span style="font-family:var(--mono);color:#fff">${setStr(R.condSet)}</span></div>
+        <div class="why">${combineText}: <span style="font-family:var(--mono);color:var(--strong)">${setStr(R.condSet)}</span></div>
         ${vText}
       </div>`);
     $('#steps').innerHTML = parts.join('');

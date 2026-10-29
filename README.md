@@ -22,7 +22,8 @@ Drag m and watch A slide along the number line. The overlap with B glows, and an
 - **Validity checks:** when an endpoint like `2m+1` lets the set shrink to nothing, a condition "V" is added requiring the set to be non-empty, and the picture shows when it is empty.
 - **Live step cards:** every inequality is shown solved (`m − 1 < 5 ⇔ m < 6`), with ✓/✗ for the current m. Hover to highlight it on the picture, click to jump there.
 - **Vietnamese and English:** Vietnamese by default; the choice is remembered per browser.
-- Dark theme with a starfield background, particle bursts and glowing effects. With `prefers-reduced-motion` on, the stars stop drifting and the page animations are switched off.
+- **Light, dark or match system:** follows your device's setting by default and switches live when it changes. Your choice is remembered, and switching plays a circular reveal from the button.
+- A starfield background (soft floating dust in light mode), particle bursts and glowing effects. With `prefers-reduced-motion` on, the stars stop drifting and the page animations are switched off.
 
 Keyboard: `Space` play/pause, `←` `→` nudge m (hold `Shift` for bigger steps), `R` reveal the answer.
 
@@ -53,6 +54,7 @@ Any set whose endpoints move at different rates also gets the validity condition
 ```
 index.html          page layout
 css/style.css       styles
+js/theme.js         light / dark / system theme, loaded in <head> to avoid a flash
 js/i18n.js          English + Vietnamese dictionaries, t(key, params)
 js/solver.js        parsing, inequality solving, interval-set algebra (also runs in Node)
 js/scene.js         canvas drawing: number line, m-axis tracks, particles
@@ -70,4 +72,4 @@ node tests/i18n.test.js     # dictionaries match, every used key exists, Vietnam
 
 ## Adding a language
 
-Add a new block next to `en` and `vi` in `js/i18n.js` and a button for it in the `#lang` switch in `index.html`. Any key you leave out falls back to English. `tests/i18n.test.js` currently compares only `en` and `vi`, so add the new language to its key check. (The sliding highlight on the switch is sized for two buttons, so `.lang-thumb` in the CSS needs a tweak for a third.)
+Add a new block next to `en` and `vi` in `js/i18n.js` and a button for it in the `#lang` switch in `index.html`. Any key you leave out falls back to English. `tests/i18n.test.js` currently compares only `en` and `vi`, so add the new language to its key check. (The sliding highlight needs a position rule for a third button, like the ones for `.switch-thumb` in `css/style.css`.)
