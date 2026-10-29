@@ -8,7 +8,7 @@ The first module, **Intervals & sets** (*Khoảng & tập hợp*), handles "find
 
 Drag m and watch A slide along the number line. The overlap with B glows, and an m-axis below paints itself green where the condition holds and red where it fails. When you're ready, reveal the answer or play an animated step-by-step solution.
 
-**Live:** https://math-visualizer-rose.vercel.app
+**Live:** https://lumath.vercel.app
 
 > 🇻🇳 **Lumath: Toán học, thắp sáng.** Bộ công cụ trực quan hóa các bài toán THPT. Phần đầu tiên dành cho các bài toán "tìm m" về khoảng, đoạn, giao, hợp và tập con. Giao diện mặc định là tiếng Việt; bấm **EN | VI** ở góc trên bên phải để đổi ngôn ngữ.
 
@@ -74,8 +74,6 @@ Add a new block next to `en` and `vi` in `js/i18n.js` and a button for it in the
 
 ## Deploying
 
-The site is deployed on Vercel as a static project; `.vercelignore` keeps `tests/` out of the upload. To publish changes:
+The site is a static Vercel project connected to this GitHub repo: every push to `main` deploys to https://lumath.vercel.app, and pushes to other branches get preview URLs. `.vercelignore` keeps `tests/` out of the upload.
 
-```bash
-vercel --prod
-```
+To deploy from your machine without pushing, run `vercel --prod`.
