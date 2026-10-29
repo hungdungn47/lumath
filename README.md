@@ -71,9 +71,3 @@ node tests/i18n.test.js     # dictionaries match, every used key exists, Vietnam
 ## Adding a language
 
 Add a new block next to `en` and `vi` in `js/i18n.js` and a button for it in the `#lang` switch in `index.html`. Any key you leave out falls back to English. `tests/i18n.test.js` currently compares only `en` and `vi`, so add the new language to its key check. (The sliding highlight on the switch is sized for two buttons, so `.lang-thumb` in the CSS needs a tweak for a third.)
-
-## Deploying
-
-The site is a static Vercel project connected to this GitHub repo: every push to `main` deploys to https://lumath.vercel.app, and pushes to other branches get preview URLs. `.vercelignore` keeps `tests/` out of the upload.
-
-To deploy from your machine without pushing, run `vercel --prod`.
