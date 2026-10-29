@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumath</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <canvas id="bg" aria-hidden="true"></canvas>
+
+    <div class="app">
+      <header class="top">
+        <div class="logo"><span class="logo-mark">✦</span> Lumath</div>
+        <span class="module-chip" data-i18n="module.intervals"></span>
+        <p class="tagline" data-i18n-html="tagline"></p>
+        <div class="lang" id="lang" role="group" aria-label="Language">
+          <span class="lang-thumb"></span>
+          <button data-lang="en" title="English">EN</button>
+          <button data-lang="vi" title="Tiếng Việt">VI</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="panel builder">
+          <h2 data-i18n="build.title"></h2>
+
+          <label class="field-label" for="preset" data-i18n="build.examples"></label>
+          <select id="preset"></select>
+
+          <div class="set-row" data-set="A">
+            <span class="set-name">A =</span>
+            <button class="br" data-end="lo" data-i18n-title="build.bracketTitle">[</button>
+            <input data-end="lo" spellcheck="false" autocomplete="off" aria-label="A: lo" />
+            <span class="semi">;</span>
+            <input data-end="hi" spellcheck="false" autocomplete="off" aria-label="A: hi" />
+            <button class="br" data-end="hi" data-i18n-title="build.bracketTitle">]</button>
+          </div>
+          <div class="set-row" data-set="B">
+            <span class="set-name">B =</span>
+            <button class="br" data-end="lo" data-i18n-title="build.bracketTitle">(</button>
+            <input data-end="lo" spellcheck="false" autocomplete="off" aria-label="B: lo" />
+            <span class="semi">;</span>
+            <input data-end="hi" spellcheck="false" autocomplete="off" aria-label="B: hi" />
+            <button class="br" data-end="hi" data-i18n-title="build.bracketTitle">)</button>
+          </div>
+          <div id="error" class="error" role="alert"></div>
+          <p class="hint" data-i18n-html="build.hint"></p>
+
+          <h2 data-i18n="build.find"></h2>
+          <div class="rels" id="rels">
+            <button data-rel="overlap"><span class="sym">A ∩ B ≠ ∅</span><span class="words" data-i18n="relbtn.overlap"></span></button>
+            <button data-rel="disjoint"><span class="sym">A ∩ B = ∅</span><span class="words" data-i18n="relbtn.disjoint"></span></button>
+            <button data-rel="AsubB"><span class="sym">A ⊂ B</span><span class="words" data-i18n="relbtn.AsubB"></span></button>
+            <button data-rel="BsubA"><span class="sym">B ⊂ A</span><span class="words" data-i18n="relbtn.BsubA"></span></button>
+          </div>
+
+          <div class="legend">
+            <div><i class="dot filled"></i> <span data-i18n-html="legend.closed"></span></div>
+            <div><i class="dot"></i> <span data-i18n-html="legend.open"></span></div>
+          </div>
+          <p class="keys" data-i18n-html="keys"></p>
+        </aside>
+
+        <main class="main">
+          <section class="panel statement" id="statement"></section>
+
+          <section class="panel stage">
+            <div class="canvas-wrap"><canvas id="scene"></canvas></div>
+            <div class="controls">
+              <button id="play" class="icon-btn" data-i18n-title="btn.play">▶</button>
+              <div class="slider-wrap">
+                <input type="range" id="mslider" step="0.01" data-i18n-aria="aria.m" />
+              </div>
+              <button id="walk" class="btn glow"></button>
+              <button id="reveal" class="btn"></button>
+            </div>
+            <div class="chips" id="chips"></div>
+          </section>
+
+          <section class="explain" id="explain" hidden>
+            <div class="panel steps" id="steps"></div>
+            <div class="panel answer" id="answer"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/solver.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/scene.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
